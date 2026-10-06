@@ -48,9 +48,12 @@ bun run check:package   # publint + are-the-types-wrong
 - Work on feature branches cut from `dev`; merge back to `dev` once tested.
 - When `dev` is ready to ship, bump `version` in `package.json`, update
   `CHANGELOG.md`, and merge `dev` into `main`.
-- Pushing to `main` runs the Publish workflow, which publishes to npm (with
-  provenance) if that version is not yet released and tags `vX.Y.Z`. It needs
-  the `NPM_TOKEN` repository secret.
+- Publish by pushing a tag that matches the version on `main`, for example
+  `git tag v0.1.0 && git push origin v0.1.0` (or create a GitHub Release with
+  that tag). The Publish workflow checks that the tag matches `package.json`,
+  that the tagged commit is on `main`, and that the version is not already on
+  npm; then it lints, tests, builds, publishes to npm with provenance, and
+  creates a GitHub Release. It needs the `NPM_TOKEN` repository secret.
 
 ## Buy Me a Coffee
 

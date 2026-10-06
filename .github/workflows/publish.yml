@@ -1,10 +1,10 @@
 name: Publish
 
-# Runs when dev is merged into main. Publishes only if the version in
-# package.json has not been released yet, so unrelated merges are no-ops.
+# Runs when a version tag (vX.Y.Z) is pushed. The tag must match the version in
+# package.json and point at a commit that is on main.
 on:
   push:
-    branches: [main]
+    tags: ['v*']
 
 permissions:
   contents: write
@@ -15,36 +15,46 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: oven-sh/setup-bun@v2
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-      - name: Read package version
-        id: package
+      - name: Verify tag matches package version
         run: |
-          echo "name=$(node -p "require('./package.json').name")" >> "$GITHUB_OUTPUT"
-          echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
-      - name: Check whether this version is already published
-        id: published
-        run: |
-          if npm view "${{ steps.package.outputs.name }}@${{ steps.package.outputs.version }}" version >/dev/null 2>&1; then
-            echo "exists=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "exists=false" >> "$GITHUB_OUTPUT"
+          package_version="$(node -p "require('./package.json').version")"
+          tag_version="${GITHUB_REF_NAME#v}"
+          if [ "$package_version" != "$tag_version" ]; then
+            echo "::error::Tag $GITHUB_REF_NAME does not match package.json version $package_version. Bump the version, merge to main, and re-tag."
+            exit 1
           fi
-      - if: steps.published.outputs.exists == 'false'
-        run: bun install --frozen-lockfile
-      - if: steps.published.outputs.exists == 'false'
-        run: bun run lint && bun run typecheck && bun run build && bun run test
-      - if: steps.published.outputs.exists == 'false'
-        run: bun run check:package
-      - if: steps.published.outputs.exists == 'false'
-        run: npm publish --provenance --access public
+      - name: Verify tagged commit is on main
+        run: |
+          git fetch origin main
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/main; then
+            echo "::error::Tag $GITHUB_REF_NAME points at $GITHUB_SHA, which is not on main. Merge dev into main before tagging."
+            exit 1
+          fi
+      - name: Verify version is not already published
+        run: |
+          name="$(node -p "require('./package.json').name")"
+          version="$(node -p "require('./package.json').version")"
+          if npm view "$name@$version" version >/dev/null 2>&1; then
+            echo "::error::$name@$version is already published to npm. Bump the version and tag again."
+            exit 1
+          fi
+      - run: bun install --frozen-lockfile
+      - run: bun run lint
+      - run: bun run typecheck
+      - run: bun run build
+      - run: bun run test
+      - run: bun run check:package
+      - run: npm publish --provenance --access public
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-      - if: steps.published.outputs.exists == 'false'
-        name: Tag release
-        run: |
-          git tag "v${{ steps.package.outputs.version }}"
-          git push origin "v${{ steps.package.outputs.version }}"
+      - name: Create GitHub release
+        run: gh release create "$GITHUB_REF_NAME" --generate-notes --verify-tag
+        env:
+          GH_TOKEN: ${{ github.token }}
