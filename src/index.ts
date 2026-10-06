@@ -5,7 +5,18 @@ export {
   DEFAULT_CATEGORY_ID,
 } from './defaults';
 export { createCategory, createSubCategory, createColor } from './factories';
-export { normalizeDocument } from './normalize';
+export {
+  normalizeDocument,
+  type DeepPartial,
+  type DocumentInput,
+} from './normalize';
+export {
+  isCategory,
+  isColor,
+  isHexColor,
+  isProjectDocument,
+  isSubCategory,
+} from './validate';
 export { luminance, sortColorsDarkToLight } from './ordering';
 export { buildRenderModel } from './render-model';
 export {

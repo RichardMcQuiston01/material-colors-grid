@@ -8,14 +8,25 @@ import { hexToRgb } from './color';
  */
 export const MIN_CARD_TEXT_CONTRAST = 3;
 
-/** WCAG relative luminance (0–1) of a hex color, with sRGB linearization. */
+/**
+ * WCAG relative luminance (0–1) of a hex color, with sRGB linearization. A
+ * malformed hex is treated as black (0) rather than throwing, so contrast math
+ * stays finite for imported/legacy data.
+ */
 export function relativeLuminance(hex: string): number {
-  const { r, g, b } = hexToRgb(hex);
+  let rgb: { r: number; g: number; b: number };
+  try {
+    rgb = hexToRgb(hex);
+  } catch {
+    return 0;
+  }
   const channel = (value: number) => {
     const s = value / 255;
     return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
   };
-  return 0.2126 * channel(r) + 0.7152 * channel(g) + 0.0722 * channel(b);
+  return (
+    0.2126 * channel(rgb.r) + 0.7152 * channel(rgb.g) + 0.0722 * channel(rgb.b)
+  );
 }
 
 /** WCAG contrast ratio between two hex colors (1–21, order-independent). */

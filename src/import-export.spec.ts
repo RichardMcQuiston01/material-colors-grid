@@ -37,4 +37,40 @@ describe('import/export', () => {
 
     expect(result.ok).toBe(false);
   });
+
+  test('rejects a document with a malformed (null) category', () => {
+    const result = parseImportedDocument('{"categories":[null],"style":{}}');
+
+    expect(result.ok).toBe(false);
+  });
+
+  test('accepts a document with a well-formed category', () => {
+    const raw = JSON.stringify({
+      categories: [{ id: 'c1', name: 'PLA', colors: [], subCategories: [] }],
+      style: {},
+    });
+
+    const result = parseImportedDocument(raw);
+
+    expect(result.ok).toBe(true);
+    if (result.ok) expect(result.document.categories).toHaveLength(1);
+  });
+
+  test('rejects a document whose colour has a malformed hex value', () => {
+    const raw = JSON.stringify({
+      categories: [
+        {
+          id: 'c1',
+          name: 'PLA',
+          colors: [{ id: 'x', name: 'Bad', hex: 'not-a-hex' }],
+          subCategories: [],
+        },
+      ],
+      style: {},
+    });
+
+    const result = parseImportedDocument(raw);
+
+    expect(result.ok).toBe(false);
+  });
 });
