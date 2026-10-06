@@ -1,5 +1,5 @@
 import { describe, expect, test } from 'vitest';
-import { computeLayout } from './layout';
+import { computeLayout, bandHeight, DEFAULT_METRICS } from './layout';
 import type { Color, RenderSection } from './types';
 import { createDefaultDocument } from './defaults';
 
@@ -92,5 +92,59 @@ describe('computeLayout', () => {
     );
 
     expect(headers).toHaveLength(0);
+  });
+
+  test('normalizes a fractional cardsPerRow to a positive integer', () => {
+    const s = { ...style(), cardsPerRow: 2.9 };
+    const sections = [
+      section(null, null, [
+        color('A', '#000000'),
+        color('B', '#333333'),
+        color('C', '#ffffff'),
+      ]),
+    ];
+
+    const cards = computeLayout(sections, s).items.filter(
+      (i) => i.type === 'card',
+    );
+
+    // 2.9 floors to 2 per row: the third card wraps under the first.
+    expect(cards[2].x).toBe(cards[0].x);
+    expect(cards[2].y).toBeGreaterThan(cards[0].y);
+    expect(cards[1].y).toBe(cards[0].y);
+  });
+
+  test('expands height to fit content that overflows style.height', () => {
+    const many = Array.from({ length: 40 }, (_, i) =>
+      color(`C${i}`, '#000000'),
+    );
+    const s = { ...style(), height: 300, cardsPerRow: 1 };
+
+    const layout = computeLayout([section(null, null, many)], s);
+    const lastCard = layout.items.filter((i) => i.type === 'card').at(-1);
+
+    expect(layout.height).toBeGreaterThan(300);
+    expect(lastCard?.type).toBe('card');
+    if (lastCard?.type === 'card') {
+      expect(lastCard.y + lastCard.height).toBeLessThanOrEqual(layout.height);
+    }
+  });
+
+  test('reserves footer space below the last card', () => {
+    const s = {
+      ...style(),
+      height: 200,
+      cardsPerRow: 1,
+      footer: { ...style().footer, text: 'makertemplate.pro' },
+    };
+    const cards = [color('A', '#000000'), color('B', '#ffffff')];
+
+    const layout = computeLayout([section(null, null, cards)], s);
+    const lastCard = layout.items.filter((i) => i.type === 'card').at(-1);
+    const footerTop = layout.height - bandHeight(s.footer, DEFAULT_METRICS);
+
+    if (lastCard?.type === 'card') {
+      expect(footerTop).toBeGreaterThanOrEqual(lastCard.y + lastCard.height);
+    }
   });
 });
