@@ -3,6 +3,8 @@
 - Author: Richard McQuiston
 - Website: https://richardmcquiston.com/
 
+**[Live demo →](https://material-colors-grid-generator.vercel.app/)**
+
 ## Overview
 
 A framework-free TypeScript library that lays out and renders a grid of color
@@ -10,68 +12,25 @@ swatches onto an HTML canvas. It is intended for product listings that show the
 available colors (for example filament colors grouped by material such as PLA
 and PETG), and powers the
 [Material Colors Grid Generator](https://github.com/RichardMcQuiston01/material-colors-grid-generator)
-app.
+app, which you can try in the [live demo](https://material-colors-grid-generator.vercel.app/).
 
 - Categories are ordered alphabetically, then sub-categories, then colors from
   dark to light.
 - Cards wrap after a configurable number of cards per row.
 - Configurable canvas size, fonts, card border and background, header and footer
   bands, and a corner watermark.
+- JSON import/export and serialization helpers.
 - Zero runtime dependencies; ESM and CommonJS builds with bundled types.
 
 ## Getting Started
-
-### Prerequisites
-
-- Node.js 20 or newer for tooling. Rendering requires a browser canvas
-  (`HTMLCanvasElement`).
-
-### Installation
 
 ```bash
 bun add @richardmcquiston01/material-colors-grid
 # or: npm install @richardmcquiston01/material-colors-grid
 ```
 
-### Usage
-
-```ts
-import {
-  createCategory,
-  createColor,
-  createDefaultDocument,
-  renderToCanvas,
-  canvasToBlob,
-} from '@richardmcquiston01/material-colors-grid';
-
-const document = createDefaultDocument();
-const pla = createCategory('PLA');
-pla.colors.push(createColor('Forest', '#1b5e20'), createColor('Snow', '#fff'));
-document.categories = [pla];
-
-const canvas = window.document.querySelector('canvas')!;
-const rendered = renderToCanvas(canvas, document);
-if (!rendered.ok) {
-  console.error(rendered.error);
-} else {
-  const png = await canvasToBlob(canvas);
-  if (png.ok) {
-    // Download or upload png.blob.
-  }
-}
-```
-
-Functions return result objects (`{ ok: true, ... }` or
-`{ ok: false, error }`) rather than throwing, so callers should check `ok`.
-
-### Examples
-
-- `parseImportedDocument(json)` and `documentToJson(doc)` back up or share a
-  document as JSON.
-- `serializeDocument` / `deserializeDocument` persist a document, for example
-  in `localStorage` under `STORAGE_KEY`.
-- `buildRenderModel` and `computeLayout` expose the ordering and layout engine
-  without drawing.
+See [GETTING_STARTED.md](./GETTING_STARTED.md) for prerequisites,
+installation, usage, and examples.
 
 ## Development
 
