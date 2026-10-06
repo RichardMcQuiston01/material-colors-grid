@@ -66,6 +66,7 @@ exported there is internal. When changing exports, update
 | `types`                        | Domain types: `Category`, `SubCategory`, `Color`, `StyleConfig`, etc.    |
 | `defaults`, `factories`        | `createDefaultDocument`, `createCategory`/`SubCategory`/`Color`          |
 | `normalize`                    | Fills missing fields of older/partial documents with defaults            |
+| `validate`                     | Runtime type guards for untrusted input (hex colors, category tree, doc) |
 | `ordering`, `render-model`     | Alphabetical categories, dark-to-light colors; flattens to sections      |
 | `layout`, `units`, `watermark` | Pure layout engine: card/header boxes, band heights, watermark rect      |
 | `color`, `contrast`            | Hex parsing, WCAG contrast, readable "auto" card text color              |

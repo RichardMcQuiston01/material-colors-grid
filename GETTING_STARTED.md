@@ -68,7 +68,8 @@ if (!rendered.ok) {
 ```
 
 `renderToCanvas` resizes the canvas to the document's configured dimensions
-(1440×1280 by default) before drawing.
+(1440×1280 by default) before drawing. If the cards and footer need more room
+than the configured height, the canvas grows taller so nothing is clipped.
 
 ### Download as PNG
 
@@ -169,6 +170,23 @@ if (imported.ok) {
 } else {
   console.error(imported.error);
 }
+```
+
+### Validate untrusted data
+
+Imported JSON and stored documents are deeply validated, so a malformed entry
+is rejected instead of reaching the renderer. The validators are also exported
+for your own checks:
+
+```ts
+import {
+  isHexColor,
+  isProjectDocument,
+} from '@richardmcquiston01/material-colors-grid';
+
+isHexColor('#1b5e20'); // true
+isHexColor('#ffff'); // false: only 3- or 6-digit hex is valid
+isProjectDocument({ categories: [null], style: {} }); // false
 ```
 
 ### Persist in localStorage

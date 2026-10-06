@@ -59,6 +59,10 @@ export function bandHeight(band: BandConfig, metrics: LayoutMetrics): number {
  * right, wrapping after `style.cardsPerRow`; each section begins on a new row,
  * and a category header is emitted only when the category changes. Content is
  * shifted down to clear a header band when one is present.
+ *
+ * The returned `height` is at least `style.height`, but grows to fit when the
+ * content plus the footer band would otherwise overflow — so cards are never
+ * clipped by the fixed canvas height and the footer never draws over them.
  */
 export function computeLayout(
   sections: RenderSection[],
@@ -67,7 +71,11 @@ export function computeLayout(
 ): Layout {
   const { padding, gap, cardHeight } = metrics;
   const contentWidth = style.width - padding * 2;
-  const cardsPerRow = Math.max(1, style.cardsPerRow);
+  // cardsPerRow must be a positive integer: a fractional value would place
+  // cards at fractional columns and compute wrong row breaks.
+  const cardsPerRow = Number.isFinite(style.cardsPerRow)
+    ? Math.max(1, Math.floor(style.cardsPerRow))
+    : 1;
   const cardWidth = (contentWidth - gap * (cardsPerRow - 1)) / cardsPerRow;
 
   const items: LayoutItem[] = [];
@@ -122,5 +130,10 @@ export function computeLayout(
     y += rows * (cardHeight + gap);
   }
 
-  return { width: style.width, height: style.height, items };
+  // Reserve the footer band plus bottom padding, and expand the canvas when the
+  // content would otherwise overflow the configured height.
+  const requiredHeight = y + bandHeight(style.footer, metrics) + padding;
+  const height = Math.max(style.height, requiredHeight);
+
+  return { width: style.width, height, items };
 }

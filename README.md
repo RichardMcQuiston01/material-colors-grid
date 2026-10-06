@@ -19,7 +19,8 @@ app, which you can try in the [live demo](https://material-colors-grid-generator
 - Cards wrap after a configurable number of cards per row.
 - Configurable canvas size, fonts, card border and background, header and footer
   bands, and a corner watermark.
-- JSON import/export and serialization helpers.
+- JSON import/export and serialization helpers, with runtime validation of
+  untrusted documents.
 - Zero runtime dependencies; ESM and CommonJS builds with bundled types.
 
 ## Getting Started

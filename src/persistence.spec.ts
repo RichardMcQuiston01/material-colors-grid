@@ -26,4 +26,10 @@ describe('document persistence', () => {
       createDefaultDocument(),
     );
   });
+
+  test('falls back to defaults when a category entry is malformed', () => {
+    expect(deserializeDocument('{"categories":[null],"style":{}}')).toEqual(
+      createDefaultDocument(),
+    );
+  });
 });
