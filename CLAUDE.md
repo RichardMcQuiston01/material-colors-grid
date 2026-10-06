@@ -103,7 +103,8 @@ render model and layout are always derived.
   with that tag. `.github/workflows/publish.yml` then verifies the tag matches
   `package.json`, the tagged commit is on `main`, and the version is not
   already on npm; runs lint, typecheck, build, tests, and `check:package`;
-  publishes with provenance; and creates a GitHub Release.
+  publishes with provenance; and creates a GitHub Release unless one already
+  exists for the tag.
 - Publishing uses the `NPM_TOKEN` repository secret for the
   `@richardmcquiston01` scope.
 - Never publish, tag, or merge to `main` without the owner's explicit go-ahead.
