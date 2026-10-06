@@ -32,26 +32,6 @@ bun add @richardmcquiston01/material-colors-grid
 See [GETTING_STARTED.md](./GETTING_STARTED.md) for prerequisites,
 installation, usage, and examples.
 
-## Development
-
-```bash
-bun install
-bun run lint
-bun run typecheck
-bun run test
-bun run build
-bun run check:package   # publint + are-the-types-wrong
-```
-
-### Branching and releases
-
-- Work on feature branches cut from `dev`; merge back to `dev` once tested.
-- When `dev` is ready to ship, bump `version` in `package.json`, update
-  `CHANGELOG.md`, and merge `dev` into `main`.
-- Pushing to `main` runs the Publish workflow, which publishes to npm (with
-  provenance) if that version is not yet released and tags `vX.Y.Z`. It needs
-  the `NPM_TOKEN` repository secret.
-
 ## Buy Me a Coffee
 
 If this app, code, or repository has helped you or someone you know, please consider donating. I appreciate any help to offset the costs of development and/or AI Credits.
