@@ -1,0 +1,50 @@
+name: Publish
+
+# Runs when dev is merged into main. Publishes only if the version in
+# package.json has not been released yet, so unrelated merges are no-ops.
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - name: Read package version
+        id: package
+        run: |
+          echo "name=$(node -p "require('./package.json').name")" >> "$GITHUB_OUTPUT"
+          echo "version=$(node -p "require('./package.json').version")" >> "$GITHUB_OUTPUT"
+      - name: Check whether this version is already published
+        id: published
+        run: |
+          if npm view "${{ steps.package.outputs.name }}@${{ steps.package.outputs.version }}" version >/dev/null 2>&1; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+          fi
+      - if: steps.published.outputs.exists == 'false'
+        run: bun install --frozen-lockfile
+      - if: steps.published.outputs.exists == 'false'
+        run: bun run lint && bun run typecheck && bun run build && bun run test
+      - if: steps.published.outputs.exists == 'false'
+        run: bun run check:package
+      - if: steps.published.outputs.exists == 'false'
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - if: steps.published.outputs.exists == 'false'
+        name: Tag release
+        run: |
+          git tag "v${{ steps.package.outputs.version }}"
+          git push origin "v${{ steps.package.outputs.version }}"

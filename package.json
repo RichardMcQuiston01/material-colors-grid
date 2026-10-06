@@ -1,0 +1,78 @@
+{
+  "name": "@richardmcquiston01/material-colors-grid",
+  "version": "0.1.0",
+  "description": "Framework-free TypeScript library that lays out and renders a grid of color swatches onto an HTML canvas.",
+  "keywords": [
+    "color",
+    "swatch",
+    "canvas",
+    "grid",
+    "filament",
+    "palette"
+  ],
+  "author": "Richard McQuiston (https://richardmcquiston.com/)",
+  "license": "Apache-2.0",
+  "homepage": "https://github.com/RichardMcQuiston01/material-colors-grid#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RichardMcQuiston01/material-colors-grid.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RichardMcQuiston01/material-colors-grid/issues"
+  },
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "require": {
+        "types": "./dist/index.d.cts",
+        "default": "./dist/index.cjs"
+      }
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "COPYRIGHT",
+    "README.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit",
+    "lint": "prettier --check . && eslint .",
+    "format": "prettier --write .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "check:package": "publint && attw --pack . --profile node16",
+    "prepublishOnly": "bun run typecheck && bun run test && bun run build"
+  },
+  "devDependencies": {
+    "@arethetypeswrong/cli": "^0.18.0",
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^24",
+    "eslint": "^10.4.1",
+    "globals": "^17.6.0",
+    "prettier": "^3.8.4",
+    "publint": "^0.3.0",
+    "tsup": "^8.5.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.60.1",
+    "vitest": "^4.1.8"
+  }
+}
