@@ -1,6 +1,6 @@
 {
   "name": "@richardmcquiston01/material-colors-grid",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Framework-agnostic TypeScript library that renders a grid of material colors (e.g. filament colors) to a canvas and exports PNG images for product pages.",
   "keywords": [
     "color-swatch",
@@ -27,6 +27,10 @@
   },
   "bugs": {
     "url": "https://github.com/RichardMcQuiston01/material-colors-grid/issues"
+  },
+  "funding": {
+    "type": "individual",
+    "url": "https://donate.stripe.com/00w5kD3Gj1Xo9v7gVOcs800"
   },
   "type": "module",
   "sideEffects": false,

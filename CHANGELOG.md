@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.1 - 2026-10-19
+
+- Added a `funding` entry to `package.json` so `npm fund` and the npm package
+  page show the donation link.
+- Added a "Buy Me a Coffee" section with a QR code (`donate.svg`) to the
+  README. No changes to the published library code.
+
 ## 0.2.0 - 2026-10-06
 
 Ports the hardening made to the generator app's in-repo core into the
