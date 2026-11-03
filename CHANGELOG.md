@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.2 - 2026-11-03
+
+- No code changes. Donate links and the `funding` entry now point to PayPal, and the README donate QR image is 180 px wide.
+
 ## 0.2.1 - 2026-10-19
 
 - Added a `funding` entry to `package.json` so `npm fund` and the npm package
